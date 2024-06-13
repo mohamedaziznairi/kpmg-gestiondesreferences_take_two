@@ -22,3 +22,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+# config/services.yaml
+
+
+    App\Controller\Admin\PowerPointGeneratorService:
+        # Define how the service should be instantiated
+        class: App\Controller\Admin\PowerPointGeneratorService
+        # Add any dependencies if required
+      
