@@ -43,10 +43,12 @@ class CredentialsCrudController extends AbstractCrudController
             //IdField::new('id'),
             TextField::new('country'),
             TextField::new('ProjectTitle'),
-            TextEditorField::new('description'),
+            TextEditorField::new('description')->setFormTypeOptions(['attr' => ['class' => 'ckeditor']]),
             TextField::new('countryvf'),
             TextField::new('ProjectTitlevf'),
-            TextEditorField::new('descriptionvf'),
+           // TextEditorField::new('descriptionvf'),
+            TextEditorField::new('descriptionvf')->setFormTypeOptions(['attr' => ['class' => 'ckeditor']])
+            ,
             AssociationField::new('client'),
             //AssociationField::new('userid'),
 

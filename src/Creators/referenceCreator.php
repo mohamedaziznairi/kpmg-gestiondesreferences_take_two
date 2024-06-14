@@ -25,7 +25,6 @@ class referenceCreator implements EventSubscriberInterface
     {
         return [
             BeforeEntityPersistedEvent::class => ['setUser'],
-            BeforeEntityPersistedEvent::class => ['setcred']
         ];
     
     }
@@ -37,15 +36,6 @@ class referenceCreator implements EventSubscriberInterface
             $entity->setUserid($this->security->getUser());
         }
     }
-    public function setcred(BeforeEntityPersistedEvent  $event)
-    {
-        $entity = $event->getEntityInstance();
-        if ($entity instanceof Objectives) {
-            $entity->setrefrenceId($this->security->setcred());
-        }
-        if ($entity instanceof Workstreams) {
-            $entity->setrefrenceId($this->security->setcred());
-        }
-    }
+    
    
 }
