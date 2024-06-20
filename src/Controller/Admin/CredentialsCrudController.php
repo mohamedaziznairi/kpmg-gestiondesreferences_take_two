@@ -189,13 +189,18 @@ public function generatePowerPoint(string $referenceId): Response
     // Fetch all Objectives associated with the Credentials
     $objectives = $this->entityManager->getRepository(Objectives::class)->findBy(['referenceid' => $referenceId]);
 
+     // Fetch all Objectives associated with the Credentials
+     $Workstreams = $this->entityManager->getRepository(Workstreams::class)->findBy(['referenceid' => $referenceId]);
+
     // Collect data from the Credentials entity
     $credentialData = [
         'country' => $credentials->getCountry(),
+        'client' => $credentials->getClient()->getCompanyname(), // Ensure `getCompanyname()` is the correct method
         'project_title' => $credentials->getProjecttitle(),
         'description' => $credentials->getDescription(),
-        'client' => $credentials->getClient()->getCompanyname(), // Ensure `getCompanyname()` is the correct method
-        'objectives' => $objectives // Store the whole objectives array
+        'objectives' => $objectives, // Store the whole objectives array
+        'Workstreams' => $Workstreams // Store the whole objectives array
+
     ];
 
     // Generate the PowerPoint presentation using your service
