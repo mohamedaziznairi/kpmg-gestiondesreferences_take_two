@@ -1,14 +1,14 @@
 <?php
 // src/Service/PowerPointGeneratorService.php
-
 namespace App\Controller\Admin;
 
 use PhpOffice\PhpPresentation\PhpPresentation;
 use PhpOffice\PhpPresentation\IOFactory;
-use PhpOffice\PhpPresentation\Slide\Background\Color;
+use PhpOffice\PhpPresentation\Slide\Background\Color as BackgroundColor;
+use PhpOffice\PhpPresentation\Shape\RichText;
 use PhpOffice\PhpPresentation\Style\Alignment;
 use PhpOffice\PhpPresentation\Style\Color as FontColor;
-use PhpOffice\PhpPresentation\Shape\RichText;
+use PhpOffice\PhpPresentation\Style\Fill;
 
 class PowerPointGeneratorService
 {
@@ -16,32 +16,63 @@ class PowerPointGeneratorService
     {
         $ppt = new PhpPresentation();
 
-        // Create a slide
+        // Create a slide with title and background color
         $slide = $ppt->getActiveSlide();
 
         // Add title
         $titleShape = $slide->createRichTextShape()
-            ->setHeight(100)
-            ->setWidth(600)
-            ->setOffsetX(170)
-            ->setOffsetY(50);
-        $titleShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $textRun = $titleShape->createTextRun('Credentials Data');
+            ->setHeight(60)
+            ->setWidth(700)
+            ->setOffsetX(50)
+            ->setOffsetY(30);
+        $titleShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $textRun = $titleShape->createTextRun('Our Credentials');
         $textRun->getFont()->setBold(true)
-            ->setSize(32)
-            ->setColor(new FontColor('FFE06B20'));
+            ->setSize(36)
+            ->setColor(new FontColor('FF003366'));  // Dark blue color for title text
 
         // Add data to slide
-        $offsetY = 150;
+        $offsetY = 120;
         foreach ($data as $key => $value) {
-            $textShape = $slide->createRichTextShape()
-                ->setHeight(40)
-                ->setWidth(600)
-                ->setOffsetX(170)
-                ->setOffsetY($offsetY);
-            $textRun = $textShape->createTextRun(ucwords($key) . ': ' . $value);
-            $textRun->getFont()->setSize(20);
-            $offsetY += 50; // Adjust spacing between lines
+            // Special handling for 'objectives'
+            if ($key === 'objectives' && is_array($value)) {
+                $textShape = $slide->createRichTextShape()
+                    ->setHeight(30)
+                    ->setWidth(700)
+                    ->setOffsetX(50)
+                    ->setOffsetY($offsetY);
+                $textShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                $textRun = $textShape->createTextRun("Objectives:");
+                $textRun->getFont()->setSize(18)
+                    ->setColor(new FontColor('FF333333'));  // Dark gray color for text
+                $offsetY += 40; // Adjust spacing after "Objectives" header
+
+                foreach ($value as $objective) {
+                    // Ensure 'getObjectif()' returns the objective text
+                    $objectiveText = $objective->getObjectif();
+                    $textShape = $slide->createRichTextShape()
+                        ->setHeight(30)
+                        ->setWidth(700)
+                        ->setOffsetX(50)
+                        ->setOffsetY($offsetY);
+                    $textShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                    $textRun = $textShape->createTextRun("- " . $objectiveText);
+                    $textRun->getFont()->setSize(16)
+                        ->setColor(new FontColor('FF666666'));  // Slightly lighter gray for objectives
+                    $offsetY += 30; // Adjust spacing between objectives
+                }
+            } else {
+                $textShape = $slide->createRichTextShape()
+                    ->setHeight(30)
+                    ->setWidth(700)
+                    ->setOffsetX(50)
+                    ->setOffsetY($offsetY);
+                $textShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                $textRun = $textShape->createTextRun(ucwords(str_replace('_', ' ', $key)) . ': ' . $value);
+                $textRun->getFont()->setSize(18)
+                    ->setColor(new FontColor('FF333333'));  // Dark gray color for text
+                $offsetY += 40; // Adjust spacing between lines
+            }
         }
 
         // Save the presentation
@@ -52,29 +83,3 @@ class PowerPointGeneratorService
         return $filename;
     }
 }
-
-/*namespace App\Controller\Admin;
-
-class PowerPointGeneratorService
-{
-    public function generatePresentation(): string
-    {
-        // Your logic to generate PowerPoint presentation
-        // Example logic to generate a simple PowerPoint presentation
-        $phpPresentation = new \PhpOffice\PhpPresentation\PhpPresentation();
-        $slide = $phpPresentation->getActiveSlide();
-        $shape = $slide->createRichTextShape()
-            ->setHeight(300)
-            ->setWidth(600)
-            ->setOffsetX(170)
-            ->setOffsetY(180);
-        $shape->getActiveParagraph()
-            ->createTextRun('Hello World!')
-            ->getFont()
-            ->setSize(36);
-        $writer = \PhpOffice\PhpPresentation\IOFactory::createWriter($phpPresentation, 'PowerPoint2007');
-        $filename = 'hello.pptx';
-        $writer->save($filename);
-        return $filename;
-    }
-}*/
