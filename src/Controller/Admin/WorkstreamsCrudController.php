@@ -1,97 +1,30 @@
 <?php
 namespace App\Controller\Admin;
-use App\Entity\Credentials;
-
-use App\Entity\Workstreams;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Symfony\Component\HttpFoundation\Request;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Doctrine\ORM\EntityManagerInterface;
-
-class WorkstreamsCrudController extends AbstractCrudController
-{
-    public static function getEntityFqcn(): string
-    {
-        return Workstreams::class;
-    }
-       // Inject RequestStack and EntityManagerInterface
-       private $requestStack;
-       private $entityManager;
-   
-       public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
-       {
-           $this->requestStack = $requestStack;
-           $this->entityManager = $entityManager;
-       }
-   
-    public function createNewEntity(string $entityFqcn)
-    {
-        $entity = new Workstreams();
-
-        // Fetch the referenceid parameter from the URL query string
-        $referenceId = $this->requestStack->getCurrentRequest()->query->get('referenceid');
-
-        // Set the referenceId in the Workstreams entity
-        $entity->setReferenceid($referenceId);
-
-        return $entity;
-    }
- /*   public function configureFields(string $pageName): iterable
-    {
-        return [
-            TextField::new('workstream'),
-            TextField::new('workstream_VF'),
-         //  AssociationField::new('referenceid'), // Hide on form if you don't want to edit it directly
-         TextField::new('referenceid') // Pre-fill with URL parameter
-     //    ->setFormTypeOption('disabled', true)
-         ->setFormTypeOption('data', $this->requestStack->getCurrentRequest()->query->get('referenceId'))
-
-        ];
-    }
-
-}*/
-public function configureFields(string $pageName): iterable
-{
-    // Fetch the referenceid parameter from the URL query string
-    $referenceId = $this->requestStack->getCurrentRequest()->query->get('referenceId');
-
-    // Fetch the Credentials entity using Doctrine
-    $credentials = $this->entityManager->getRepository(Credentials::class)->find($referenceId);
-    return [
-        TextField::new('workstream'),
-        TextField::new('workstream_VF'),
-        AssociationField::new('referenceid')
-        //->setCrudController(CredentialsCrudController::class)
-           ->setFormTypeOption('data_class',null) // Ensure correct data class
-           ->setFormTypeOption('data', $credentials) // Pre-fill with Credentials entity
-            //->setRequired(true) // Optional: make it required if needed
-          // ->autocomplete(), // Optional: use autocomplete feature
-    ];
-}
-}
-/*namespace App\Controller\Admin;
 
 use App\Entity\Credentials;
 use App\Entity\Workstreams;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class WorkstreamsCrudController extends AbstractCrudController
 {
     private $requestStack;
     private $entityManager;
+    private $adminUrlGenerator;
 
-    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager, AdminUrlGenerator $adminUrlGenerator)
     {
         $this->requestStack = $requestStack;
         $this->entityManager = $entityManager;
+        $this->adminUrlGenerator = $adminUrlGenerator;
     }
 
     public static function getEntityFqcn(): string
@@ -102,23 +35,14 @@ class WorkstreamsCrudController extends AbstractCrudController
     public function createNewEntity(string $entityFqcn)
     {
         $entity = new Workstreams();
-
-        // Fetch the referenceid parameter from the URL query string
         $referenceId = $this->requestStack->getCurrentRequest()->query->get('referenceId');
 
-        // Debugging purposes, you can remove this in production
-        dump($referenceId);
-        die;
-
         if ($referenceId) {
-            // Fetch the Credentials entity using Doctrine
             $credentials = $this->entityManager->getRepository(Credentials::class)->find($referenceId);
-
             if ($credentials) {
-                // Set the Credentials entity in the Workstreams entity
                 $entity->setReferenceid($credentials);
             } else {
-                throw $this->createNotFoundException('Credentials not found for referenceid ' . $referenceId);
+                throw $this->createNotFoundException('Credentials not found for referenceId ' . $referenceId);
             }
         }
 
@@ -130,27 +54,42 @@ class WorkstreamsCrudController extends AbstractCrudController
         return [
             TextField::new('workstream'),
             TextField::new('workstream_VF'),
-            // Use AssociationField for referenceid
             AssociationField::new('referenceid')
-            ->autocomplete()
-            ->setRequired(true)
-            ->setCrudController(CredentialsCrudController::class)
-        
+                ->setCrudController(CredentialsCrudController::class)
+                ->setFormTypeOption('data_class', null)
+                ->setFormTypeOption('data', $this->getReferenceIdAsEntity())
         ];
     }
 
     private function getReferenceIdAsEntity()
     {
-        // Fetch the referenceid parameter from the URL query string
-        $referenceId = $this->requestStack->getCurrentRequest()->query->get('referenceid');
+        $referenceId = $this->requestStack->getCurrentRequest()->query->get('referenceId');
 
-        // Fetch the Credentials entity using Doctrine
         if ($referenceId) {
             return $this->entityManager->getRepository(Credentials::class)->find($referenceId);
         }
 
         return null;
     }
-}
-*/
 
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+
+        if ($entityInstance instanceof Workstreams) {
+            // Retrieve the Credentials entity linked to this Workstreams
+            $credentials = $entityInstance->getReferenceid();
+            if ($credentials instanceof Credentials) {
+                $url = $this->adminUrlGenerator
+                    ->setController(CredentialsCrudController::class)
+                    ->setAction(Action::DETAIL)
+                    ->setEntityId($credentials->getReferenceid()) // Ensure to use getId() for the entity ID
+                    ->generateUrl();
+                // Redirect to the detail page
+                header('Location: ' . $url);
+                exit; // Ensure script termination after header redirection
+            }
+        }
+    }
+    
+}

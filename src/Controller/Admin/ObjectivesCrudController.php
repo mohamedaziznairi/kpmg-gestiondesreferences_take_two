@@ -50,5 +50,20 @@ class ObjectivesCrudController extends AbstractCrudController
           
         ];
     }
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
     
+        if ($credentials instanceof Credentials) {
+            $url = $this->adminUrlGenerator
+                ->setController(CredentialsCrudController::class)
+                ->setAction(Action::DETAIL)
+                ->setEntityId($credentials->getReferenceid()) // Ensure to use getId() for the entity ID
+                ->generateUrl();
+    
+            // Redirect to detail page
+            header('Location: ' . $url);
+            exit; // Ensure script termination after header redirection
+        }
+    } 
 }
