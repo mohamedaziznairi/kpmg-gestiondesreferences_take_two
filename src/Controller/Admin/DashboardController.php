@@ -52,6 +52,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Clients', 'fa fa-group', Clients::class);
       //  yield MenuItem::linkToCrud('Objectives', 'fa fa-objectif', Objectives::class);
        // yield MenuItem::linkToCrud('Workstreams', 'fa fa-group', Workstreams::class);
+       yield MenuItem::linkToRoute('powerpointTemplate', 'fa fa-file', 'powerpointTemplate');
 
 
     }
