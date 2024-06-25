@@ -83,13 +83,21 @@ class CredentialsCrudController extends AbstractCrudController
                     ->generateUrl();
             })
             ->setCssClass('btn btn-secondary');
-
-        // Attach actions only to DETAIL pages where the entity is guaranteed to be present
+            $viewPowerPointTemplate = Action::new('viewPowerPointTemplate', 'View PowerPoint Template')
+            ->linkToRoute('admin_powerpoint_template', function (Credentials $entity) {
+                // Replace 'custom_route_name' with the name of your route
+                return [
+                    'referenceId' => $entity->getReferenceid(),
+                ];
+            })
+            ->setCssClass('btn btn-primary'); // Set your desired CSS classes
         return $actions
+            ->add(Crud::PAGE_INDEX, $viewPowerPointTemplate)
             ->add(Crud::PAGE_DETAIL, $generatePpt)
             ->add(Crud::PAGE_INDEX, $generatePpt)
             ->add(Crud::PAGE_DETAIL, $addObjective)
             ->add(Crud::PAGE_DETAIL, $addWorkstream);
+
     }
 
     public function configureFields(string $pageName): iterable
@@ -133,7 +141,21 @@ class CredentialsCrudController extends AbstractCrudController
         // Return a response with the file download
         return $this->file($filename, 'credential_' . $credentials->getReferenceid() . '.pptx');
     }
+    #[Route('/admin/powerpointTemplate/{referenceId}', name: 'admin_powerpoint_template', methods: ['GET'])]
+    public function viewPowerPointTemplate(string $referenceId): Response
+    {
+        // Fetch the credential entity from the database based on referenceId
+        $credential = $this->getDoctrine()->getRepository(Credentials::class)->findOneBy(['referenceid' => $referenceId]);
 
+        if (!$credential) {
+            throw $this->createNotFoundException('Credential not found');
+        }
+
+        // Render the Twig template and pass the credential entity as data
+        return $this->render('templates\powerpointTemplate.html.twig', [
+            'credential' => $credential,
+        ]);
+    }
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         parent::persistEntity($entityManager, $entityInstance);
@@ -168,7 +190,7 @@ class CredentialsCrudController extends AbstractCrudController
     }*/
 
 
-    public function createIndexQueryBuilder(
+ /*   public function createIndexQueryBuilder(
         SearchDto $searchDto,
         EntityDto $entityDto,
         FieldCollection $fields,
@@ -180,6 +202,25 @@ class CredentialsCrudController extends AbstractCrudController
         return $queryBuilder
             ->andWhere('entity.userid = :userid')
             ->setParameter('userid', $user);
+    }*/
+
+    public function createIndexQueryBuilder(
+        $searchDto,
+        $entityDto,
+        $fields,
+        $filters
+    ): QueryBuilder {
+        $user = $this->security->getUser();
+        $userRole = $user->getRole(); // Assume this returns a single role as a string
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if ($userRole === 'ROLE_USER') {
+            $queryBuilder
+            ->andWhere('entity.userid = :userid')
+                ->setParameter('userid', $user);
+            }
+
+        return $queryBuilder;
     }
 
     

@@ -84,6 +84,15 @@ class Users implements UserInterface
 
     private $creationdate = 'CURRENT_TIMESTAMP';
 
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=250, nullable=false)
+     */
+    #[ORM\Column(name: 'role', type: 'string', length: 25, nullable: false)]
+
+    private $role;
+
     public function getUserid(): ?int
     {
         return $this->userid;
@@ -215,5 +224,17 @@ class Users implements UserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
+
+        return $this;
     }
 }

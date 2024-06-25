@@ -1,3 +1,8 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+# config/routes.yaml
+admin_powerpoint_template:
+    path: '/admin/powerpointTemplate/{referenceId}'
+    controller: App\Controller\Admin\CredentialsCrudController::viewPowerPointTemplate
+    methods: ['GET']

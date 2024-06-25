@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -19,7 +19,17 @@ class RegistrationFormType extends AbstractType
         $builder
         ->add('firstname')
         ->add('lastname')
-        
+        ->add('role', ChoiceType::class, [
+            'choices' => [
+                'User' => 'ROLE_USER',
+                'Admin' => 'ROLE_ADMIN',
+                // Add more roles as needed
+            ],
+            'expanded' => false, // Change to true if you want radio buttons instead of a dropdown
+            'multiple' => false, // Change to true if you want to allow selecting multiple roles
+            'placeholder' => 'Choose a role', // Optional placeholder text
+            'required' => true,
+        ])
         //->add('creationdate')
         ->add('creationdate', null, [
             'data' => new \DateTime(), // Set the default value to the current date and time

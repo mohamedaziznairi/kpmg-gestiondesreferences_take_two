@@ -1,69 +1,31 @@
+{# templates/powerpointTemplate.html.twig #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Credentials</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5; /* Light gray background */
-    }
-    .container {
-      display: flex;
-      flex-direction: row;
-      width: 100vw;
-      height: 100vh;
-    }
-    .left-box {
-      background-color: #fff; /* White background */
-      border: none; /* Remove border if needed */
-      padding: 20px;
-      width: 50%;
-    }
-    .right-box {
-      background-color: #fff; /* White background */
-      border: none; /* Remove border if needed */
-      padding: 20px;
-      width: 50%;
-    }
-    .title {
-      font-size: 36px;
-      font-weight: bold;
-      text-align: center;
-      padding: 20px 0;
-    }
-    .client-context, .objectives, .workstreams {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .objectives, .workstreams {
-      text-align: right; /* Right-align objectives and workstreams */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint Template - {{ credential.projectTitle }}</title>
 </head>
 <body>
-  <div class="container">
-    <div class="left-box">
-      <h2 class="client-context">Client & Context</h2>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-    <div class="right-box">
-      <h2 class="objectives">Objectives</h2>
-      <ul>
-        <li>Objective 1</li>
-        <li>Objective 2</li>
-        <li>Objective 3</li>
-      </ul>
-      <h2 class="workstreams">Workstreams</h2>
-      <ul>
-        <li>Workstream 1</li>
-        <li>Workstream 2</li>
-        <li>Workstream 3</li>
-      </ul>
-    </div>
-  </div>
+    <h1>{{ credential.projectTitle }}</h1>
+    <p><strong>Country:</strong> {{ credential.country }}</p>
+    <p><strong>Description:</strong></p>
+    <p>{{ credential.description }}</p>
+    <p><strong>Client:</strong> {{ credential.client.companyName }}</p>
+
+    <h2>Objectives</h2>
+    <ul>
+        {% for objective in credential.objectives %}
+            <li>{{ objective.description }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Workstreams</h2>
+    <ul>
+        {% for workstream in credential.workstreams %}
+            <li>{{ workstream.name }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
