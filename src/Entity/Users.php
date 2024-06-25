@@ -162,7 +162,10 @@ class Users implements UserInterface
         return $this->creationdate instanceof \DateTimeInterface ? $this->creationdate : null;
     }
  
-
+    public function __construct()
+    {
+        $this->creationdate = new \DateTime(); // Set current date and time when object is created
+    }
     public function setCreationdate(\DateTimeInterface $creationdate): static
     {
         $this->creationdate = $creationdate;

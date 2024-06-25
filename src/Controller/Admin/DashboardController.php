@@ -60,7 +60,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
         $user = $this->security->getUser();
-        $userRole = $user->getRoles(); // Assume this returns a single role as a string
+        $userRole = $user->getRole(); // Assume this returns a single role as a string
         
         if ($userRole === 'ROLE_ADMIN') {
         yield MenuItem::linkToCrud('Users', 'fas fa-users', Users::class);}

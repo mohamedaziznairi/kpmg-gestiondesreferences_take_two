@@ -91,11 +91,44 @@ class CredentialsCrudController extends AbstractCrudController
                 ];
             })
             ->setCssClass('btn btn-primary'); // Set your desired CSS classes
+            // View Objectives action
+            $viewObjectives = Action::new('viewObjectives', 'View Objectives')
+            ->linkToUrl(function (Credentials $entity) {
+                if ($entity === null) {
+                    throw new \LogicException('The entity is not available.');
+                }
+                return $this->adminUrlGenerator
+                    ->setController(ObjectivesCrudController::class)
+                    ->setAction(Crud::PAGE_INDEX)
+                    ->setEntityId(null) // Ensure we don't target a specific entity
+                    ->set('filters', ['referenceid' => $entity->getReferenceid()]) // Pass as a filter
+                    ->generateUrl();
+            })
+            ->setCssClass('btn btn-secondary');
+            $viewWorkstreams = Action::new('viewWorkstreams', 'View Workstreams')
+            ->linkToUrl(function (Credentials $entity) {
+                if ($entity === null) {
+                    throw new \LogicException('The entity is not available.');
+                }
+                return $this->adminUrlGenerator
+                    ->setController(WorkstreamsCrudController::class)
+                    ->setAction(Crud::PAGE_INDEX)
+                    ->setEntityId(null) // Ensure we don't target a specific entity
+                    ->set('filters', ['referenceid' => $entity->getReferenceid()]) // Pass as a filter
+                    ->generateUrl();
+            })
+            ->setCssClass('btn btn-primary');
+
+   
         return $actions
             ->add(Crud::PAGE_INDEX, $viewPowerPointTemplate)
             ->add(Crud::PAGE_DETAIL, $generatePpt)
             ->add(Crud::PAGE_INDEX, $generatePpt)
             ->add(Crud::PAGE_DETAIL, $addObjective)
+            ->add(Crud::PAGE_DETAIL, $viewWorkstreams)
+            ->add(Crud::PAGE_INDEX, $viewWorkstreams)
+            ->add(Crud::PAGE_DETAIL, $viewObjectives)
+            ->add(Crud::PAGE_INDEX, $viewObjectives)
             ->add(Crud::PAGE_DETAIL, $addWorkstream);
 
     }
@@ -125,14 +158,17 @@ class CredentialsCrudController extends AbstractCrudController
     
         // Fetch all Objectives associated with the Credentials
         $objectives = $this->entityManager->getRepository(Objectives::class)->findBy(['referenceid' => $referenceId]);
-    
+        $workstreams = $this->entityManager->getRepository(Workstreams::class)->findBy(['referenceid' => $referenceId]);
+
         // Collect data from the Credentials entity
         $credentialData = [
             'country' => $credentials->getCountry(),
             'project_title' => $credentials->getProjecttitle(),
             'description' => $credentials->getDescription(),
             'client' => $credentials->getClient()->getCompanyname(), // Ensure `getCompanyname()` is the correct method
-            'objectives' => $objectives // Store the whole objectives array
+            'objectives' => $objectives, // Store the whole objectives array
+            'workstreams' => $workstreams // Store the whole objectives array
+
         ];
     
         // Generate the PowerPoint presentation using your service
@@ -141,21 +177,28 @@ class CredentialsCrudController extends AbstractCrudController
         // Return a response with the file download
         return $this->file($filename, 'credential_' . $credentials->getReferenceid() . '.pptx');
     }
+  
     #[Route('/admin/powerpointTemplate/{referenceId}', name: 'admin_powerpoint_template', methods: ['GET'])]
     public function viewPowerPointTemplate(string $referenceId): Response
     {
         // Fetch the credential entity from the database based on referenceId
         $credential = $this->getDoctrine()->getRepository(Credentials::class)->findOneBy(['referenceid' => $referenceId]);
-
+  // Fetch all Objectives associated with the Credentials
+  $objectives = $this->entityManager->getRepository(Objectives::class)->findBy(['referenceid' => $referenceId]);
+  $workstreams = $this->entityManager->getRepository(Workstreams::class)->findBy(['referenceid' => $referenceId]);
         if (!$credential) {
             throw $this->createNotFoundException('Credential not found');
         }
 
         // Render the Twig template and pass the credential entity as data
-        return $this->render('templates\powerpointTemplate.html.twig', [
+        return $this->render('powerpointTemplate.html.twig', [
             'credential' => $credential,
+            'objectives' => $objectives,
+            'workstreams' => $workstreams,
+
         ]);
     }
+
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         parent::persistEntity($entityManager, $entityInstance);

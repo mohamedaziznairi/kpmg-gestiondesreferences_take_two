@@ -11,7 +11,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 class ObjectivesCrudController extends AbstractCrudController
 {
     private $requestStack;
@@ -98,6 +102,26 @@ class ObjectivesCrudController extends AbstractCrudController
                 exit; // Ensure script termination after header redirection
             }
         }
+    }
+
+    public function createIndexQueryBuilder(
+        SearchDto $searchDto,
+        EntityDto $entityDto,
+        FieldCollection $fields,
+        FilterCollection $filters
+    ): QueryBuilder {
+        $request = $this->getContext()->getRequest();
+        $filterData = $request->query->get('filters');
+
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if (!empty($filterData['referenceid'])) {
+            $queryBuilder
+                ->andWhere('entity.referenceid = :referenceId')
+                ->setParameter('referenceId', $filterData['referenceid']);
+        }
+
+        return $queryBuilder;
     }
 }
 

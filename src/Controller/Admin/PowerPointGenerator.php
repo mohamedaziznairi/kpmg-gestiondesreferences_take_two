@@ -55,7 +55,7 @@ class PowerPointGeneratorService
 
         // Add credentials data to the left box
         foreach ($data as $key => $value) {
-            if ($key !== 'objectives' && $key !== 'Workstreams') {
+            if ($key !== 'objectives' && $key !== 'workstreams') {
                 $textRun = $leftBox->createTextRun(ucwords(str_replace('_', ' ', $key)) . ': ' . $value . "\n");
                 $textRun->getFont()->setSize(18)
                     ->setColor(new FontColor('FF333333'));  // Dark gray color for text
@@ -121,8 +121,8 @@ class PowerPointGeneratorService
         $workstreamsBox->getFill()->setFillType(Fill::FILL_SOLID)->setStartColor(new FontColor('FFFFFFFF')); // White background
 
         // Add workstreams to the workstreams content box
-        if (isset($data['Workstreams']) && is_array($data['Workstreams'])) {
-            foreach ($data['Workstreams'] as $workstream) {
+        if (isset($data['workstreams']) && is_array($data['workstreams'])) {
+            foreach ($data['workstreams'] as $workstream) {
                 $workstreamText = $workstream->getWorkstream();
                 $textRun = $workstreamsBox->createTextRun("- " . $workstreamText . "\n");
                 $textRun->getFont()->setSize(16)

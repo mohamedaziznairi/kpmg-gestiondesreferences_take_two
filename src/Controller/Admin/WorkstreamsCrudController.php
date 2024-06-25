@@ -13,7 +13,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 class WorkstreamsCrudController extends AbstractCrudController
 {
     private $requestStack;
@@ -91,5 +97,23 @@ class WorkstreamsCrudController extends AbstractCrudController
             }
         }
     }
-    
+    public function createIndexQueryBuilder(
+        SearchDto $searchDto,
+        EntityDto $entityDto,
+        FieldCollection $fields,
+        FilterCollection $filters
+    ): QueryBuilder {
+        $request = $this->getContext()->getRequest();
+        $filterData = $request->query->get('filters');
+
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if (!empty($filterData['referenceid'])) {
+            $queryBuilder
+                ->andWhere('entity.referenceid = :referenceId')
+                ->setParameter('referenceId', $filterData['referenceid']);
+        }
+
+        return $queryBuilder;
+    }
 }

@@ -1,31 +1,202 @@
 {# templates/powerpointTemplate.html.twig #}
-
+{# <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PowerPoint Template - {{ credential.projectTitle }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5; /* Light gray background */
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      width: 100vw;
+      height: 100vh;
+    }
+    .left-box {
+      background-color: #fff; /* White background */
+      border: none; /* Remove border if needed */
+      padding: 20px;
+      width: 50%;
+    }
+    .right-box {
+      background-color: #fff; /* White background */
+      border: none; /* Remove border if needed */
+      padding: 20px;
+      width: 50%;
+    }
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .client-context, .objectives, .workstreams {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .objectives, .workstreams {
+      text-align: right; /* Right-align objectives and workstreams */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-box">
+      <h2 class="client-context">Client & Context</h2>
+      <h1>{{ credential.projectTitle }}</h1>
+      <p><strong>Country:</strong> {{ credential.country }}</p>
+      <p><strong>Description:</strong></p>
+      <p>{{ credential.description }}</p>
+      <p><strong>Client:</strong> {{ credential.client.companyName }}</p>
+    </div>
+    <div class="right-box">
+      <h2 class="objectives">Objectives</h2>
+      <ul>
+        {% for objective in objectives %}
+          <li>{{ objective.objectif }}</li>
+        {% endfor %}
+      </ul>
+      <h2 class="workstreams">Workstreams</h2>
+      <ul>
+        {% for workstream in workstreams %}
+          <li>{{ workstream.workstream }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</body>
+</html>#}
+{# templates/powerpointTemplate.html.twig #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerPoint Template - {{ credential.projectTitle }}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PowerPoint Template - {{ credential.projectTitle }}</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5; /* Light gray background */
+      color: #333; /* Text color */
+      overflow: hidden; /* Hide overflow for full screen view */
+    }
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      box-sizing: border-box;
+      background-color: #fff; /* White background */
+      border: 1px solid #e0e0e0; /* Light border */
+      border-radius: 10px; /* Rounded corners */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+    .left-box, .right-box {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .left-box {
+      background-color: #343a40; /* Dark gray background */
+      color: #fff; /* White text */
+      border-top-left-radius: 10px; /* Rounded corners */
+      border-bottom-left-radius: 10px; /* Rounded corners */
+      padding: 60px; /* Increased padding for a cleaner look */
+    }
+    .right-box {
+      background-color: #f8f9fc; /* Light background */
+      border-top-right-radius: 10px; /* Rounded corners */
+      border-bottom-right-radius: 10px; /* Rounded corners */
+      padding-left: 60px; /* More padding for cleaner look */
+      padding-right: 60px;
+    }
+    .title {
+      font-size: 36px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .client-context, .objectives, .workstreams {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #6c757d; /* Subtle underline */
+      padding-bottom: 5px;
+    }
+    .content {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .content p {
+      margin: 5px 0;
+    }
+    .highlight {
+      font-weight: 600;
+    }
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-top: 0;
+    }
+    ul li {
+      margin: 10px 0;
+      font-weight: 500; /* Slightly bolder for better readability */
+    }
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+      align-self: center;
+    }
+  </style>
 </head>
 <body>
-    <h1>{{ credential.projectTitle }}</h1>
-    <p><strong>Country:</strong> {{ credential.country }}</p>
-    <p><strong>Description:</strong></p>
-    <p>{{ credential.description }}</p>
-    <p><strong>Client:</strong> {{ credential.client.companyName }}</p>
-
-    <h2>Objectives</h2>
-    <ul>
-        {% for objective in credential.objectives %}
-            <li>{{ objective.description }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Workstreams</h2>
-    <ul>
-        {% for workstream in credential.workstreams %}
-            <li>{{ workstream.name }}</li>
-        {% endfor %}
-    </ul>
+  <div class="container">
+    <div class="left-box">
+      <img src="public\assets\img\icons\artistryhubLogo.png" alt="Company Logo" class="logo">
+      <h1 class="title">{{ credential.projectTitle }}</h1>
+      <div class="client-context">
+        <h2 class="section-title">Client & Context</h2>
+        <div class="content">
+          <p><span class="highlight">Country:</span> {{ credential.country }}</p>
+          <p><span class="highlight">Description:</span> {{ credential.description }}</p>
+          <p><span class="highlight">Client:</span> {{ credential.client.companyName }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="right-box">
+      <div class="objectives">
+        <h2 class="section-title">Objectives</h2>
+        <ul>
+          {% for objective in objectives %}
+            <li>{{ objective.objectif }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="workstreams">
+        <h2 class="section-title">Where we’ve delivered value
+</h2>
+        <ul>
+          {% for workstream in workstreams %}
+            <li>{{ workstream.workstream }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
