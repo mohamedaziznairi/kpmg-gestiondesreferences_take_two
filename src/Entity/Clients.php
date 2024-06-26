@@ -76,7 +76,10 @@ class Clients
 
         return $this;
     }
-
+    public function __construct()
+    {
+        $this->addeddate = new \DateTime(); // Set current date and time when object is created
+    }
     public function __toString()
     {
         return $this->idclient ?? 'N/A'; // Return 'N/A' if userId is null
