@@ -178,7 +178,8 @@
         <h2 class="section-title">Client & Context</h2>
         <div class="content">
           <p><span class="highlight">pays:</span> {{ credential.countryVf }}</p>
-          <p><span class="highlight">Description:</span> {{ credential.descriptionVf }}</p>
+         <p><span class="highlight">Description:</span> {{ credential.descriptionVf | raw }}</p>
+
           <p><span class="highlight">Client:</span> {{ credential.client.companyName }}</p>
         </div>
       </div>
