@@ -63,9 +63,10 @@ class DashboardController extends AbstractDashboardController
         $userRole = $user->getRole(); // Assume this returns a single role as a string
         
         if ($userRole === 'ROLE_ADMIN') {
-        yield MenuItem::linkToCrud('Users', 'fas fa-users', Users::class);}
-        yield MenuItem::linkToCrud('Credentials', 'fa fa-address-book', Credentials::class);
+        yield MenuItem::linkToCrud('Users', 'fas fa-users', Users::class);
         yield MenuItem::linkToCrud('Clients', 'fa fa-group', Clients::class);
+    }
+        yield MenuItem::linkToCrud('Credentials', 'fa fa-address-book', Credentials::class);
         yield MenuItem::linkToRoute('PowerPoint Template', 'fa fa-file', 'powerpointTemplate');
     }
 }

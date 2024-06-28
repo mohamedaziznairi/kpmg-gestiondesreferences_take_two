@@ -147,7 +147,7 @@ class PowerPointGeneratorService
             ->setOffsetX(50)
             ->setOffsetY(30);
         $titleShape->getActiveParagraph()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $titleShape->getFill()->setFillType(Fill::FILL_SOLID)->setStartColor(new FontColor('FF003366')); // Dark blue background
+        $titleShape->getFill()->setFillType(Fill::FILL_SOLID)->setStartColor(new FontColor('6D2077')); // Dark blue background
         $textRun = $titleShape->createTextRun('Nos Références');
         $textRun->getFont()->setBold(true)
             ->setSize(36)
