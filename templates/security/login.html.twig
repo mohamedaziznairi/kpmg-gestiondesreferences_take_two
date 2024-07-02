@@ -1,31 +1,148 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Log in{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background: #f7f9fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 900px;
+            width: 100%;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .logo-container {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .login-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .login-header {
+            background: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+        }
+        .login-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .login-body {
+            padding: 30px;
+        }
+        .login-footer {
+            background: #f1f1f1;
+            text-align: center;
+            padding: 15px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group .input-group-text {
+            background: transparent;
+            border: none;
+            color: #6c757d;
+        }
+        .input-group input {
+            border-left: none;
+            flex: 1;
+            min-width: 0; /* Ensures input can shrink */
+        }
+        .btn-login {
+            font-size: 0.9rem;
+            padding: 10px 20px;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+<div class="login-container">
+    <div class="logo-container">
+      <img src="{{ asset('kpmg.png') }}" alt="Company Logo" class="logo">
+    </div>
+    <div class="card login-card">
+        <div class="login-header">
+            <h2 class="h4 mb-0">Credentials Creation Center</h2>
         </div>
-    {% endif %}
+        <div class="login-body">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                {% if app.user %}
+                    <div class="alert alert-info mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                    </div>
+                </div>
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="btn btn-primary btn-block btn-login" type="submit">
+                    Log in
+                </button>
+            </form>
+        </div>
+        
+    </div>
+</div>
 {% endblock %}
